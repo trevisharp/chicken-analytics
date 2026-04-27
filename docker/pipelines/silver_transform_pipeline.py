@@ -1,4 +1,5 @@
 from pyspark.sql import SparkSession
+from delta.tables import DeltaTable
 
 spark = SparkSession.builder \
     .appName("silver") \
@@ -36,6 +37,19 @@ slaughter_df = slaughter_df.select(
     "chick_batch_id"
 )
 
-egg_df.write.format("delta").mode("overwrite").save("data/silver/egg_purchases")
-send_chicks_df.write.format("delta").mode("overwrite").save("data/silver/hatch_batches")
-slaughter_df.write.format("delta").mode("overwrite").save("data/silver/slaughter_batches")
+def merge(path, df):
+    if DeltaTable.isDeltaTable(spark, path):
+        delta_table = DeltaTable.forPath(spark, path)
+
+        delta_table.alias("target").merge(
+            df.alias("source"),
+            "target.event_id = source.event_id"
+        ).whenMatchedUpdateAll() \
+        .whenNotMatchedInsertAll() \
+        .execute()
+    else:
+        df.write.format("delta").save(path)
+
+merge("data/silver/egg_purchases", egg_df)
+merge("data/silver/send_chicks_batches", send_chicks_df)
+merge("data/silver/slaughter_batches", slaughter_df)

@@ -67,7 +67,7 @@ def call_slaughter(time, chick_batch, count):
 
 
 def main():
-    date = datetime.now() - timedelta(days=180)
+    date = datetime.now() - timedelta(days=360)
 
     egg_stock = 0
     egg_batch = 0
