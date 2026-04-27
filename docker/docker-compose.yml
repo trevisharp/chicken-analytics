@@ -19,7 +19,7 @@ services:
       "
 
   spark:
-    image: apache/spark:3.5.0
+    build: .
     container_name: spark
     volumes:
       - .:/app

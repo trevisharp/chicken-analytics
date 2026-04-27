@@ -1,0 +1,12 @@
+FROM apache/spark:3.5.0
+
+USER root
+
+RUN pip install delta-spark
+
+ENV DELTA_VERSION=3.2.0
+ENV SCALA_VERSION=2.12
+RUN curl -L -o /opt/spark/jars/delta-core.jar \
+https://repo1.maven.org/maven2/io/delta/delta-spark_${SCALA_VERSION}/${DELTA_VERSION}/delta-spark_${SCALA_VERSION}-${DELTA_VERSION}.jar
+
+USER spark
