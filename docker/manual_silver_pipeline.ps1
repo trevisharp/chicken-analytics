@@ -1,0 +1,1 @@
+docker exec -it spark /opt/spark/bin/spark-submit --packages io.delta:delta-spark_2.12:3.2.0 --conf spark.jars.ivy=/tmp/.ivy2 pipelines/silver_transform_pipeline.py
