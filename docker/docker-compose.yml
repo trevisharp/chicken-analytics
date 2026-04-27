@@ -1,14 +1,15 @@
 version: "3.8"
 
 services:
-
-  airflow:
+  airflow-webserver:
     image: apache/airflow:2.8.0
-    container_name: airflow
+    container_name: airflow-webserver
     ports:
       - "8081:8080"
     volumes:
       - .:/opt/airflow
+      - ./data:/opt/airflow/data
+      - ./dags:/opt/airflow/dags
     environment:
       - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow.db
@@ -17,6 +18,18 @@ services:
       airflow db init &&
       airflow webserver
       "
+
+  airflow-scheduler:
+    image: apache/airflow:2.8.0
+    container_name: airflow-scheduler
+    volumes:
+      - .:/opt/airflow
+      - ./data:/opt/airflow/data
+      - ./dags:/opt/airflow/dags
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow.db
+    command: airflow scheduler
 
   spark:
     build: .
