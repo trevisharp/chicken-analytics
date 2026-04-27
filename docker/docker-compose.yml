@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+
+  airflow:
+    image: apache/airflow:2.8.0
+    container_name: airflow
+    ports:
+      - "8081:8080"
+    volumes:
+      - .:/opt/airflow
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=sqlite:////opt/airflow/airflow.db
+    command: >
+      bash -c "
+      airflow db init &&
+      airflow webserver
+      "
+
+  spark:
+    image: apache/spark:3.5.0
+    container_name: spark
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: tail -f /dev/null
